@@ -12,10 +12,10 @@ const server = app.listen(port, () => {
 // Статические файлы (предполагаем, что они лежат в папке 'public')
 app.use(express.static('public'));
 
-// Явно отдаем index.html при обращении к главной странице
-// ИСПОЛЬЗУЕМ process.cwd() для надежного поиска в среде Render
+// ФИНАЛЬНОЕ ИСПРАВЛЕНИЕ ПУТИ: Используем path.resolve и __dirname
+// Это гарантирует, что Node.js найдет файл, независимо от рабочего каталога Render.
 app.get('/', (req, res) => {
-    res.sendFile(path.join(process.cwd(), 'public', 'index.html'));
+    res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
 });
 
 // Настройка Socket.IO
