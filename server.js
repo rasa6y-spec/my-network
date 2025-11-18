@@ -1,6 +1,5 @@
 ﻿const express = require('express');
 const socket = require('socket.io');
-const path = require('path');
 
 const app = express();
 // Render требует слушать порт, предоставленный переменной среды
@@ -9,14 +8,8 @@ const server = app.listen(port, () => {
     console.log(`Сервер запущен на http://localhost:${port}`);
 });
 
-// Статические файлы (предполагаем, что они лежат в папке 'public')
+// Статические файлы (находит index.html в папке 'public')
 app.use(express.static('public'));
-
-// ФИНАЛЬНОЕ ИСПРАВЛЕНИЕ ПУТИ: Используем path.resolve и __dirname
-// Это гарантирует, что Node.js найдет файл, независимо от рабочего каталога Render.
-app.get('/', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
-});
 
 // Настройка Socket.IO
 const io = socket(server);
@@ -24,15 +17,13 @@ const io = socket(server);
 io.on('connection', (socket) => {
     console.log('Новое подключение:', socket.id);
 
-    // Обработка события chat (сообщение + никнейм)
+    // Обработка события chat
     socket.on('chat', (data) => {
-        // data = {message: '...', nickname: '...'}
-        io.sockets.emit('chat', data); // Рассылаем всем сообщение с никнеймом
+        io.sockets.emit('chat', data);
     });
 
-    // Обработка события typing (никнейм)
+    // Обработка события typing
     socket.on('typing', (data) => {
-        // data = никнейм пользователя, который печатает
-        socket.broadcast.emit('typing', data); // Рассылаем всем КРОМЕ отправителя
+        socket.broadcast.emit('typing', data);
     });
 });

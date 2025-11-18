@@ -1,6 +1,5 @@
-/* Базовые стили */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: Arial, sans-serif;
     margin: 0;
     background: #f4f4f4;
     color: #333;
@@ -10,12 +9,11 @@ body {
     padding-top: 20px;
 }
 
-/* Окно чата */
 #chat-window {
     background: #fff;
     border: 1px solid #ccc;
     padding: 10px;
-    width: 60%; 
+    width: 60%;
     max-width: 800px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     margin-bottom: 10px;
@@ -23,57 +21,18 @@ body {
     overflow-y: auto;
 }
 
-/* Стили сообщений */
 #output p {
     margin: 5px 0;
     padding: 5px;
     border-bottom: 1px dotted #eee;
-    word-wrap: break-word;
 }
 
-/* Системное сообщение */
-.system-message {
-    color: gray;
-    font-style: italic;
-    font-size: 0.9em;
-    text-align: center;
-}
-
-/* Индикатор печати */
 #feedback p {
     color: #aaa;
     font-style: italic;
     margin: 5px 0;
 }
 
-/* Стили области никнейма */
-#nickname-area {
-    margin-bottom: 10px;
-    padding: 5px;
-    border: 1px solid #ddd;
-    background: #f9f9f9;
-    display: flex;
-    gap: 5px;
-}
-
-#nickname-area input {
-    padding: 8px;
-    border: 1px solid #ccc;
-    flex-grow: 1;
-    box-sizing: border-box;
-}
-
-#nickname-area button {
-    padding: 8px 15px;
-    background: #28a745;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-size: 1em;
-}
-
-
-/* Стили ввода и кнопки отправки */
 #message {
     padding: 10px;
     border: 1px solid #ccc;
@@ -89,33 +48,4 @@ body {
     border: none;
     cursor: pointer;
     font-size: 1em;
-}
-
-/* АДАПТИВНЫЕ СТИЛИ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ */
-@media (max-width: 768px) {
-    body {
-        padding-top: 10px;
-    }
-
-    #chat-window {
-        width: 95%; /* Делаем окно чата почти на всю ширину экрана */
-        height: 60vh; 
-        max-width: none;
-    }
-
-    #message {
-        width: 65%; /* Уменьшаем поле ввода сообщения */
-        padding: 12px;
-        font-size: 1.1em;
-    }
-
-    #send {
-        width: 30%; /* Делаем кнопку отправки шире */
-        padding: 12px;
-        font-size: 1.1em;
-    }
-
-    #nickname-area input {
-        width: 60%;
-    }
 }
