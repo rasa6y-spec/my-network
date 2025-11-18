@@ -1,0 +1,77 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1e1e1e; /* Темный фон VS Code */
+    color: #cccccc;
+    margin: 0;
+}
+
+#app-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Стили боковой панели */
+#sidebar {
+    width: 200px;
+    background-color: #252526;
+    padding: 15px;
+    border-right: 1px solid #3c3c3c;
+}
+
+/* Стили основной области */
+#main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    background-color: #333333;
+    padding: 10px 20px;
+    border-bottom: 1px solid #444444;
+}
+
+/* Область для сообщений */
+#messages {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #1e1e1e;
+}
+
+.message-item {
+    margin-bottom: 10px;
+    padding: 8px;
+    border-radius: 4px;
+    background-color: #3c3c3c; /* Фон сообщения */
+}
+
+/* Область ввода */
+#input-area {
+    display: flex;
+    padding: 10px;
+    background-color: #252526;
+    border-top: 1px solid #444444;
+}
+
+#message-input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #555555;
+    background-color: #3c3c3c;
+    color: #cccccc;
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+#send-button {
+    background-color: #007acc; /* Синий цвет акцента VS Code */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+#send-button:hover {
+    background-color: #005f99;
+}

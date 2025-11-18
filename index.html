@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>VS Code Chat</title>
+    <link rel="stylesheet" href="style.css"> 
+</head>
+<body>
+    <div id="app-container">
+        <div id="sidebar">
+            <h3>Explorer</h3>
+            <p>chat.js</p>
+            <p>style.css</p>
+            <p>index.html</p>
+        </div>
+        
+        <div id="main-content">
+            <header>
+                <h2>Terminal/Chat</h2>
+            </header>
+            <div id="messages">
+                </div>
+            <div id="input-area">
+                <input type="text" id="message-input" placeholder="Введите сообщение...">
+                <button id="send-button">Отправить (Ctrl+Enter)</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script> 
+    <script src="chat.js"></script>
+</body>
+</html>
