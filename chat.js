@@ -1,49 +1,56 @@
-// chat.js
-// --- CHAT.JS ЗАГРУЖЕН И НАЧАЛ РАБОТУ ---
-console.log("--- CHAT.JS ЗАГРУЖЕН И НАЧАЛ РАБОТУ ---"); 
+// ВАЖНО: Используем вашу публичную ссылку Render
+var socket = io.connect('https://my-network-vldt.onrender.com');
 
-// Подключаемся к серверу Socket.IO. io() теперь определен!
-const socket = io(); 
+// Элементы DOM
+var message = document.getElementById('message');
+var send_button = document.getElementById('send');
+var output = document.getElementById('output');
+var feedback = document.getElementById('feedback');
 
-const messagesDiv = document.getElementById('messages');
-const input = document.getElementById('message-input');
-const sendButton = document.getElementById('send-button');
+// НОВЫЕ Элементы для никнейма
+var nickname_input = document.getElementById('nickname');
+var nickname_set_button = document.getElementById('set-nickname');
+var nickname_area = document.getElementById('nickname-area');
 
-// Функция для добавления сообщения в DOM
-function appendMessage(msg) {
-    const item = document.createElement('div');
-    item.classList.add('message-item');
-    item.textContent = msg;
-    messagesDiv.appendChild(item);
-    // Прокрутка вниз
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-}
+var nickname = 'Гость'; // Никнейм по умолчанию
 
-// Функция отправки сообщения на сервер
-function sendMessage() {
-    const text = input.value.trim();
-    if (text) {
-        // Отправляем сообщение на сервер по событию 'chat message'
-        socket.emit('chat message', text);
-        input.value = ''; // Очищаем поле ввода
-    }
-}
-
-// Обработчики событий
-sendButton.addEventListener('click', sendMessage);
-
-// Обработчик для отправки по Ctrl + Enter
-input.addEventListener('keydown', (e) => {
-    if (e.ctrlKey && e.key === 'Enter') {
-        sendMessage();
+// Обработка установки никнейма
+nickname_set_button.addEventListener('click', function(){
+    if (nickname_input.value.trim() !== '') {
+        nickname = nickname_input.value.trim();
+        nickname_area.style.display = 'none'; // Скрываем область ввода
+        // Добавляем системное сообщение
+        output.innerHTML += '<p class="system-message">Вы вошли как: <strong>' + nickname + '</strong></p>';
     }
 });
 
-// Получение сообщения от сервера
-// Слушаем событие 'chat message' от сервера
-socket.on('chat message', (msg) => {
-    appendMessage('User: ' + msg);
+
+// Отправка сообщения
+send_button.addEventListener('click', function(){
+    if (message.value.trim() !== '') {
+        socket.emit('chat', {
+            message: message.value,
+            nickname: nickname // ОТПРАВЛЯЕМ НИКНЕЙМ
+        });
+        message.value = "";
+    }
 });
 
-// Сообщение, которое должно появиться при загрузке страницы
-appendMessage('System: Добро пожаловать в чат-терминал!');
+// Получение сообщения
+socket.on('chat', function(data){
+    feedback.innerHTML = '';
+    // ОТОБРАЖАЕМ НИКНЕЙМ
+    output.innerHTML += '<p><strong>' + data.nickname + ': </strong>' + data.message + '</p>';
+    output.scrollTop = output.scrollHeight; // Автопрокрутка
+});
+
+// Индикатор печати
+message.addEventListener('keypress', function(){
+    socket.emit('typing', nickname); // ОТПРАВЛЯЕМ НИКНЕЙМ при печати
+});
+
+// Получение индикатора печати
+socket.on('typing', function(data){
+    // data здесь - это никнейм печатающего пользователя
+    feedback.innerHTML = '<p><em>' + data + ' печатает сообщение...</em></p>';
+});
