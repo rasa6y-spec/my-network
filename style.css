@@ -1,77 +1,121 @@
+/* Базовые стили */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #1e1e1e; /* Темный фон VS Code */
-    color: #cccccc;
     margin: 0;
-}
-
-#app-container {
-    display: flex;
-    height: 100vh;
-}
-
-/* Стили боковой панели */
-#sidebar {
-    width: 200px;
-    background-color: #252526;
-    padding: 15px;
-    border-right: 1px solid #3c3c3c;
-}
-
-/* Стили основной области */
-#main-content {
-    flex-grow: 1;
+    background: #f4f4f4;
+    color: #333;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
 }
 
-header {
-    background-color: #333333;
-    padding: 10px 20px;
-    border-bottom: 1px solid #444444;
-}
-
-/* Область для сообщений */
-#messages {
-    flex-grow: 1;
-    padding: 20px;
-    overflow-y: auto;
-    background-color: #1e1e1e;
-}
-
-.message-item {
+/* Окно чата */
+#chat-window {
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 60%; 
+    max-width: 800px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     margin-bottom: 10px;
-    padding: 8px;
-    border-radius: 4px;
-    background-color: #3c3c3c; /* Фон сообщения */
+    height: 400px;
+    overflow-y: auto;
 }
 
-/* Область ввода */
-#input-area {
+/* Стили сообщений */
+#output p {
+    margin: 5px 0;
+    padding: 5px;
+    border-bottom: 1px dotted #eee;
+    word-wrap: break-word;
+}
+
+/* Системное сообщение */
+.system-message {
+    color: gray;
+    font-style: italic;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+/* Индикатор печати */
+#feedback p {
+    color: #aaa;
+    font-style: italic;
+    margin: 5px 0;
+}
+
+/* Стили области никнейма */
+#nickname-area {
+    margin-bottom: 10px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    background: #f9f9f9;
     display: flex;
-    padding: 10px;
-    background-color: #252526;
-    border-top: 1px solid #444444;
+    gap: 5px;
 }
 
-#message-input {
+#nickname-area input {
+    padding: 8px;
+    border: 1px solid #ccc;
     flex-grow: 1;
-    padding: 10px;
-    border: 1px solid #555555;
-    background-color: #3c3c3c;
-    color: #cccccc;
-    font-size: 16px;
-    margin-right: 10px;
+    box-sizing: border-box;
 }
 
-#send-button {
-    background-color: #007acc; /* Синий цвет акцента VS Code */
+#nickname-area button {
+    padding: 8px 15px;
+    background: #28a745;
     color: white;
     border: none;
-    padding: 10px 15px;
     cursor: pointer;
+    font-size: 1em;
 }
 
-#send-button:hover {
-    background-color: #005f99;
+
+/* Стили ввода и кнопки отправки */
+#message {
+    padding: 10px;
+    border: 1px solid #ccc;
+    width: 50%;
+    max-width: 700px;
+    box-sizing: border-box;
 }
+
+#send {
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+/* АДАПТИВНЫЕ СТИЛИ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ */
+@media (max-width: 768px) {
+    body {
+        padding-top: 10px;
+    }
+
+    #chat-window {
+        width: 95%; /* Делаем окно чата почти на всю ширину экрана */
+        height: 60vh; 
+        max-width: none;
+    }
+
+    #message {
+        width: 65%; /* Уменьшаем поле ввода сообщения */
+        padding: 12px;
+        font-size: 1.1em;
+    }
+
+    #send {
+        width: 30%; /* Делаем кнопку отправки шире */
+        padding: 12px;
+        font-size: 1.1em;
+    }
+
+    #nickname-area input {
+        width: 60%;
+    }
+}ы
