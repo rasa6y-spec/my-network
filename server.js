@@ -1,6 +1,6 @@
 ﻿const express = require('express');
 const socket = require('socket.io');
-const path = require('path'); // ДОБАВЛЕНО: для работы с путями
+const path = require('path'); // Добавлено для работы с путями
 
 const app = express();
 // Render требует слушать порт, предоставленный переменной среды
@@ -12,7 +12,7 @@ const server = app.listen(port, () => {
 // Статические файлы (предполагаем, что они лежат в папке 'public')
 app.use(express.static('public'));
 
-// ДОБАВЛЕНО: Явно отдаем index.html при обращении к главной странице
+// Явно отдаем index.html при обращении к главной странице
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
