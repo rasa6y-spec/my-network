@@ -1,6 +1,6 @@
 ﻿const express = require('express');
 const socket = require('socket.io');
-const path = require('path'); // Добавлено для работы с путями
+const path = require('path');
 
 const app = express();
 // Render требует слушать порт, предоставленный переменной среды
@@ -13,8 +13,9 @@ const server = app.listen(port, () => {
 app.use(express.static('public'));
 
 // Явно отдаем index.html при обращении к главной странице
+// ИСПОЛЬЗУЕМ process.cwd() для надежного поиска в среде Render
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(process.cwd(), 'public', 'index.html'));
 });
 
 // Настройка Socket.IO
