@@ -1,38 +1,49 @@
-// ВАЖНО: При локальном запуске замените URL на 'http://localhost:10000'
-var socket = io.connect('https://my-network-vldt.onrender.com');
+// chat.js
+// --- CHAT.JS ЗАГРУЖЕН И НАЧАЛ РАБОТУ ---
+console.log("--- CHAT.JS ЗАГРУЖЕН И НАЧАЛ РАБОТУ ---"); 
 
-// Элементы DOM
-var message = document.getElementById('message');
-var send_button = document.getElementById('send');
-var output = document.getElementById('output');
-var feedback = document.getElementById('feedback');
-var handle = 'Гость'; // Простая переменная-заглушка
+// Подключаемся к серверу Socket.IO. io() теперь определен!
+const socket = io(); 
 
-// Отправка сообщения
-send_button.addEventListener('click', function(){
-    if (message.value.trim() !== '') {
-        socket.emit('chat', {
-            message: message.value,
-            handle: handle // Отправляем заглушку
-        });
-        message.value = "";
+const messagesDiv = document.getElementById('messages');
+const input = document.getElementById('message-input');
+const sendButton = document.getElementById('send-button');
+
+// Функция для добавления сообщения в DOM
+function appendMessage(msg) {
+    const item = document.createElement('div');
+    item.classList.add('message-item');
+    item.textContent = msg;
+    messagesDiv.appendChild(item);
+    // Прокрутка вниз
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+// Функция отправки сообщения на сервер
+function sendMessage() {
+    const text = input.value.trim();
+    if (text) {
+        // Отправляем сообщение на сервер по событию 'chat message'
+        socket.emit('chat message', text);
+        input.value = ''; // Очищаем поле ввода
+    }
+}
+
+// Обработчики событий
+sendButton.addEventListener('click', sendMessage);
+
+// Обработчик для отправки по Ctrl + Enter
+input.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key === 'Enter') {
+        sendMessage();
     }
 });
 
-// Получение сообщения
-socket.on('chat', function(data){
-    feedback.innerHTML = '';
-    // Выводим сообщение с заглушкой
-    output.innerHTML += '<p><strong>' + data.handle + ': </strong>' + data.message + '</p>';
-    output.scrollTop = output.scrollHeight; // Автопрокрутка
+// Получение сообщения от сервера
+// Слушаем событие 'chat message' от сервера
+socket.on('chat message', (msg) => {
+    appendMessage('User: ' + msg);
 });
 
-// Индикатор печати
-message.addEventListener('keypress', function(){
-    socket.emit('typing', handle); // Отправляем заглушку
-});
-
-// Получение индикатора печати
-socket.on('typing', function(data){
-    feedback.innerHTML = '<p><em>' + data + ' печатает сообщение...</em></p>';
-});
+// Сообщение, которое должно появиться при загрузке страницы
+appendMessage('System: Добро пожаловать в чат-терминал!');
