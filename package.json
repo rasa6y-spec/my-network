@@ -1,13 +1,13 @@
 {
-  "name": "vs-code-chat",  
+  "name": "public-social-chat",
   "version": "1.0.0",
-  "description": "Simple chat using Node.js and Socket.io",
+  "description": "A public, worldwide chat application with usernames using Node.js and Socket.IO.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^5.1.0",
-    "socket.io": "^4.8.1"
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
   }
 }

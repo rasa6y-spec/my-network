@@ -2,32 +2,28 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>VS Code Chat</title>
-    <link rel="stylesheet" href="style.css"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Всемирный Чат (Социальная Сеть)</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="app-container">
-        <div id="sidebar">
-            <h3>Explorer</h3>
-            <p>chat.js</p>
-            <p>style.css</p>
-            <p>index.html</p>
-        </div>
-        
-        <div id="main-content">
-            <header>
-                <h2>Terminal/Chat</h2>
-            </header>
-            <div id="messages">
-                </div>
-            <div id="input-area">
-                <input type="text" id="message-input" placeholder="Введите сообщение...">
-                <button id="send-button">Отправить (Ctrl+Enter)</button>
-            </div>
-        </div>
+    <div id="username-area">
+        <form id="username-form">
+            <h2>Добро пожаловать во Всемирный Чат!</h2>
+            <input id="username-input" autocomplete="off" placeholder="Введите ваше имя" required />
+            <button type="submit">Войти в Чат</button>
+        </form>
     </div>
 
-    <script src="/socket.io/socket.io.js"></script> 
+    <div id="chat-container" style="display:none;">
+        <h1>💬 Всемирный Чат</h1>
+        <ul id="messages"></ul>
+        <form id="message-form" action="">
+            <input id="input" autocomplete="off" placeholder="Введите сообщение..." /><button>Отправить</button>
+        </form>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
     <script src="chat.js"></script>
 </body>
 </html>

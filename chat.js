@@ -1,49 +1,74 @@
-// chat.js
-// --- CHAT.JS ЗАГРУЖЕН И НАЧАЛ РАБОТУ ---
-console.log("--- CHAT.JS ЗАГРУЖЕН И НАЧАЛ РАБОТУ ---"); 
+// Глобальная переменная для имени пользователя
+let username = '';
 
-// Подключаемся к серверу Socket.IO. io() теперь определен!
+// Получаем элементы DOM
+const usernameArea = document.getElementById('username-area');
+const chatContainer = document.getElementById('chat-container');
+const usernameForm = document.getElementById('username-form');
+const usernameInput = document.getElementById('username-input');
+
+const messageForm = document.getElementById('message-form');
+const input = document.getElementById('input');
+const messages = document.getElementById('messages');
+
+// Устанавливаем соединение с сервером
+// При деплое, если сервер и клиент на разных доменах, замените io() на io('URL_ВАШЕГО_СЕРВЕРА')
 const socket = io(); 
 
-const messagesDiv = document.getElementById('messages');
-const input = document.getElementById('message-input');
-const sendButton = document.getElementById('send-button');
+// --- 1. Обработка ввода имени пользователя ---
+usernameForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const enteredUsername = usernameInput.value.trim();
 
-// Функция для добавления сообщения в DOM
-function appendMessage(msg) {
-    const item = document.createElement('div');
-    item.classList.add('message-item');
-    item.textContent = msg;
-    messagesDiv.appendChild(item);
-    // Прокрутка вниз
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-}
-
-// Функция отправки сообщения на сервер
-function sendMessage() {
-    const text = input.value.trim();
-    if (text) {
-        // Отправляем сообщение на сервер по событию 'chat message'
-        socket.emit('chat message', text);
-        input.value = ''; // Очищаем поле ввода
-    }
-}
-
-// Обработчики событий
-sendButton.addEventListener('click', sendMessage);
-
-// Обработчик для отправки по Ctrl + Enter
-input.addEventListener('keydown', (e) => {
-    if (e.ctrlKey && e.key === 'Enter') {
-        sendMessage();
+    if (enteredUsername) {
+        username = enteredUsername;
+        
+        // Скрываем форму имени и показываем чат
+        usernameArea.style.display = 'none';
+        chatContainer.style.display = 'block';
+        
+        // Отправляем системное сообщение о присоединении
+        socket.emit('chat message', { 
+            username: 'СИСТЕМА', 
+            text: `${username} присоединился к чату.` 
+        });
     }
 });
 
-// Получение сообщения от сервера
-// Слушаем событие 'chat message' от сервера
-socket.on('chat message', (msg) => {
-    appendMessage('User: ' + msg);
+// --- 2. Обработка отправки сообщения ---
+messageForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  
+  if (input.value && username) {
+    // Отправляем объект с именем пользователя и текстом
+    const messageData = {
+        username: username,
+        text: input.value
+    };
+    
+    socket.emit('chat message', messageData);
+    input.value = ''; // Очищаем поле ввода
+  }
 });
 
-// Сообщение, которое должно появиться при загрузке страницы
-appendMessage('System: Добро пожаловать в чат-терминал!');
+// --- 3. Обработка получения сообщения ---
+// Ожидаем объект { username: 'Имя', text: 'Сообщение' }
+socket.on('chat message', (data) => {
+  const item = document.createElement('li');
+  
+  // Создаем HTML: <span class="username">Имя:</span> Сообщение
+  item.innerHTML = `<span class="username">${data.username}:</span> ${data.text}`;
+
+  // Стилизация для системных сообщений
+  if (data.username === 'СИСТЕМА') {
+      item.classList.add('system-message');
+  } else if (data.username === username) {
+      // Подсвечиваем свои сообщения
+      item.classList.add('my-message');
+  }
+
+  messages.appendChild(item);
+  
+  // Прокрутка к последнему сообщению
+  messages.scrollTop = messages.scrollHeight;
+});

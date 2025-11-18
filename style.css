@@ -1,51 +1,155 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    background: #f4f4f4;
-    color: #333;
+/* Основные стили */
+body { 
+    margin: 0; 
+    padding: 0; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background-color: #f4f7f6; 
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    padding-top: 20px;
+    min-height: 100vh;
 }
 
-#chat-window {
-    background: #fff;
-    border: 1px solid #ccc;
-    padding: 10px;
-    width: 60%;
-    max-width: 800px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 10px;
-    height: 400px;
-    overflow-y: auto;
+/* Область ввода имени пользователя */
+#username-area {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
 }
 
-#output p {
-    margin: 5px 0;
-    padding: 5px;
-    border-bottom: 1px dotted #eee;
+#username-area h2 {
+    color: #333;
+    margin-bottom: 20px;
 }
 
-#feedback p {
-    color: #aaa;
-    font-style: italic;
-    margin: 5px 0;
-}
-
-#message {
+#username-form input {
     padding: 10px;
     border: 1px solid #ccc;
-    width: 50%;
-    max-width: 700px;
-    box-sizing: border-box;
+    border-radius: 4px;
+    width: 250px;
+    margin-right: 10px;
+    font-size: 1rem;
 }
 
-#send {
+#username-form button {
     padding: 10px 20px;
     background: #007bff;
     color: white;
     border: none;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 1em;
+    transition: background 0.3s;
+}
+
+#username-form button:hover {
+    background: #0056b3;
+}
+
+/* Контейнер чата */
+#chat-container {
+    width: 100%;
+    max-width: 600px;
+    height: 80vh; /* Высокий контейнер */
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+#chat-container h1 {
+    text-align: center;
+    color: #007bff;
+    padding: 10px;
+    margin: 0;
+    border-bottom: 1px solid #eee;
+}
+
+/* Список сообщений */
+#messages { 
+    list-style-type: none; 
+    padding: 10px; 
+    margin: 0;
+    flex-grow: 1; 
+    overflow-y: auto; /* Автоматическая прокрутка */
+}
+
+#messages li { 
+    padding: 8px 12px; 
+    margin-bottom: 10px;
+    background: #eef;
+    border-radius: 18px;
+    max-width: 80%;
+    word-wrap: break-word; 
+    line-height: 1.4;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+/* Стили для имени пользователя внутри сообщения */
+#messages li .username {
+    font-weight: bold;
+    color: #007bff;
+    margin-right: 5px;
+}
+
+/* Стили для системных сообщений (присоединение/отключение) */
+#messages li.system-message {
+    text-align: center;
+    background: #fff3cd; /* Желтоватый фон */
+    color: #856404;
+    font-style: italic;
+    font-size: 0.9em;
+    padding: 5px 10px;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 90%;
+}
+
+/* Стили для ваших собственных сообщений */
+#messages li.my-message {
+    background: #d4edda; /* Зеленоватый фон */
+    color: #155724;
+    margin-left: auto; /* Выравнивание вправо */
+}
+
+#messages li.my-message .username {
+    color: #155724; /* Темно-зеленый */
+}
+
+/* Форма отправки */
+#message-form { 
+    background: #fff; 
+    padding: 10px; 
+    display: flex; 
+    border-top: 1px solid #eee;
+}
+
+#input { 
+    border: 1px solid #ccc; 
+    padding: 10px; 
+    flex-grow: 1; 
+    margin-right: 10px;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+#input:focus { 
+    outline: none; 
+    border-color: #007bff;
+}
+
+#message-form button { 
+    background: #007bff; 
+    border: none; 
+    padding: 10px 20px; 
+    border-radius: 4px;
+    color: white; 
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#message-form button:hover {
+    background: #0056b3;
 }
