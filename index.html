@@ -1,25 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Моя Соцсеть</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="auth-area">
+    <div id="auth-area" style="display: none;">
         <h2>Добро пожаловать</h2>
         <form id="auth-form">
-            <input type="text" id="auth-username" placeholder="Имя пользователя" required>
-            <input type="password" id="auth-password" placeholder="Пароль" required>
+            <input type="text" id="username" placeholder="Имя пользователя" required>
+            <input type="password" id="password" placeholder="Пароль" required>
             <button type="submit" id="login-button">Войти</button>
+            <p id="auth-message"></p>
             <button type="button" id="register-toggle">Регистрация</button>
-            <p id="auth-message" class="error-message"></p>
         </form>
     </div>
 
     <div id="social-container" style="display: none;">
         <header>
-            <h1><span id="welcome-user"></span></h1>
+            <span id="welcome-user">Моя Соцсеть</span>
             <button id="logout-button">Выйти</button>
         </header>
 
@@ -32,13 +34,12 @@
         </div>
         
         <div id="feed">
-            <h2>Ваша Лента Новостей</h2>
             <ul id="posts-list">
                 </ul>
         </div>
     </div>
-
-    <script src="/socket.io/socket.io.js"></script>
+    
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="client.js"></script>
 </body>
 </html>

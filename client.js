@@ -7,6 +7,12 @@ const socket = io();
 const authArea = document.getElementById('auth-area');
 const socialContainer = document.getElementById('social-container');
 const authForm = document.getElementById('auth-form');
+
+// --- ИСПРАВЛЕННЫЕ ПЕРЕМЕННЫЕ ДЛЯ ПОЛЕЙ ВВОДА ---
+const usernameInput = document.getElementById('username'); 
+const passwordInput = document.getElementById('password');
+// -------------------------------------------------
+
 const authMessage = document.getElementById('auth-message');
 const loginButton = document.getElementById('login-button');
 const registerToggle = document.getElementById('register-toggle');
@@ -130,8 +136,11 @@ function renderPost(post) {
 // Обработка регистрации/входа
 authForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const username = e.target.username.value;
-    const password = e.target.password.value;
+    
+    // ИСПРАВЛЕНИЕ: Используем переменные usernameInput и passwordInput
+    const username = usernameInput.value; 
+    const password = passwordInput.value;
+    
     const endpoint = isRegistering ? '/api/register' : '/api/login';
     const method = 'POST';
 

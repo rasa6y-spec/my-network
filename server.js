@@ -13,9 +13,10 @@ const server = http.createServer(app);
 const PORT = process.env.PORT || 10000;
 const JWT_SECRET = 'your_super_secret_key_for_jwt_auth'; 
 
-// !!! ВСТАВЬТЕ СВОЮ СТРОКУ ПОДКЛЮЧЕНИЯ MONGODB ATLAS СЮДА !!!
+// !!! ИСПРАВЛЕННАЯ СТРОКА ПОДКЛЮЧЕНИЯ MONGODB ATLAS !!!
+// Используем предоставленные данные: bye_bye:r123321a
 const MONGODB_URI = 'mongodb+srv://bye_bye:r123321a@momento.gex5zgk.mongodb.net/socialchatdb?appName=Momento'; 
-// !!! НЕ ЗАБУДЬТЕ ИСПРАВИТЬ !!!
+// !!! СТРОКА ИСПРАВЛЕНА !!!
 
 app.use(express.static('.'));
 app.use(express.json());
