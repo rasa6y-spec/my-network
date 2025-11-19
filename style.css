@@ -54,6 +54,13 @@ body {
     margin-top: 5px;
 }
 
+#auth-form button#register-toggle {
+    margin-top: 20px;
+    background-color: #ffffff;
+    color: #0095f6;
+    border: 1px solid #0095f6;
+}
+
 #auth-message {
     color: red;
     margin-top: 10px;
@@ -173,6 +180,11 @@ header {
     border-top: 1px solid #eee;
 }
 
+.post-actions div {
+    display: flex; /* Выравнивание элементов лайка и комментария */
+    align-items: center;
+}
+
 .post-actions button {
     background: none;
     border: none;
@@ -184,8 +196,23 @@ header {
 }
 
 .like-button {
-    color: #ed4956 !important; 
-    transition: transform 0.1s;
+    font-size: 1.2em !important;
+    margin-right: 5px !important;
+    color: #262626;
+}
+
+.like-button:hover {
+    color: #ed4956;
+}
+
+.likes-count {
+    margin-right: 15px;
+    font-weight: bold;
+    color: #262626;
+}
+
+.comment-toggle-button {
+    font-size: 1.2em !important;
 }
 
 /* Комментарии */

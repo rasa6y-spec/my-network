@@ -97,7 +97,9 @@ async function loadFeed() {
 function renderPost(post) {
     const li = document.createElement('li');
     li.className = 'post-item';
-    li.dataset.postId = post._id || post.id;
+    // Используем уникальный ID поста
+    const postId = post._id || post.id;
+    li.dataset.postId = postId;
     
     const date = new Date(post.createdAt).toLocaleDateString('ru-RU', { 
         day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
@@ -112,15 +114,15 @@ function renderPost(post) {
         <p class="post-content-text">${post.content}</p>
         <div class="post-actions">
             <div>
-                <button class="like-button" onclick="handleLike('${post._id || post.id}')">❤️</button>
+                <button class="like-button" onclick="handleLike('${postId}')">❤️</button>
                 <span class="likes-count">${post.likes}</span>
-                <button class="comment-toggle-button" data-post-id="${post._id || post.id}" onclick="toggleComments(this)">💬</button> 
+                <button class="comment-toggle-button" data-post-id="${postId}" onclick="toggleComments(this)">💬</button> 
             </div>
             <span class="post-date">${date}</span>
         </div>
-        <div class="comments-section" id="comments-${post._id || post.id}" style="display: none;">
-            <ul class="comments-list" data-post-id="${post._id || post.id}"></ul>
-            <form class="comment-form" data-post-id="${post._id || post.id}" onsubmit="handleCommentSubmit(event, this)">
+        <div class="comments-section" id="comments-${postId}" style="display: none;">
+            <ul class="comments-list" data-post-id="${postId}"></ul>
+            <form class="comment-form" data-post-id="${postId}" onsubmit="handleCommentSubmit(event, this)">
                 <input type="text" placeholder="Добавить комментарий..." required>
                 <button type="submit">ОК</button>
             </form>
