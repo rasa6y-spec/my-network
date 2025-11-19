@@ -15,7 +15,7 @@ const JWT_SECRET = 'your_super_secret_key_for_jwt_auth';
 
 // !!! ФИНАЛЬНАЯ ИСПРАВЛЕННАЯ СТРОКА ПОДКЛЮЧЕНИЯ MONGODB ATLAS !!!
 // Используем надежного пользователя ras6dy_db_user 
-const MONGODB_URI = 'mongodb+srv://ras6dy_db_user:sT3COl4x4HDC9Gtm@momento.gex5zgk.mongodb.net/socialchatdb?appName=Momento'; 
+const MONGODB_URI = 'mongodb+srv://ras6dy_db_user:r123321a@momento.gex5zgk.mongodb.net/socialchatdb?appName=Momento'; 
 // !!! ЭТА СТРОКА ДОЛЖНА ГАРАНТИРОВАТЬ ПОДКЛЮЧЕНИЕ !!!
 
 app.use(express.static('.'));
