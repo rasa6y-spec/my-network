@@ -11,11 +11,11 @@ const server = http.createServer(app);
 // 📌 1. КОНФИГУРАЦИЯ
 // -------------------------------------------------------------
 const PORT = process.env.PORT || 10000;
-// ВАШ СЕКРЕТНЫЙ КЛЮЧ
 const JWT_SECRET = 'your_super_secret_key_for_jwt_auth'; 
 
-// Ваша строка подключения MongoDB Atlas
+// !!! ВСТАВЬТЕ СВОЮ СТРОКУ ПОДКЛЮЧЕНИЯ MONGODB ATLAS СЮДА !!!
 const MONGODB_URI = 'mongodb+srv://bye_bye:r123321a@momento.gex5zgk.mongodb.net/socialchatdb?appName=Momento'; 
+// !!! НЕ ЗАБУДЬТЕ ИСПРАВИТЬ !!!
 
 app.use(express.static('.'));
 app.use(express.json());
@@ -32,17 +32,14 @@ mongoose.connect(MONGODB_URI)
 
 // 📌 3. СХЕМЫ И МОДЕЛИ
 // -------------------------------------------------------------
-
-// Схема пользователя (обновлена для подписок)
 const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     bio: { type: String, default: 'Пользователь нашей новой соцсети.' },
-    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Подписчики
-    following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Подписки
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], 
+    following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], 
 });
 
-// Схема поста
 const postSchema = new mongoose.Schema({
     content: { type: String, required: true },
     authorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -51,8 +48,17 @@ const postSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 
+const commentSchema = new mongoose.Schema({
+    postId: { type: mongoose.Schema.Types.ObjectId, ref: 'Post', required: true },
+    authorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    authorUsername: { type: String, required: true },
+    content: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now }
+});
+
 const User = mongoose.model('User', userSchema);
 const Post = mongoose.model('Post', postSchema);
+const Comment = mongoose.model('Comment', commentSchema); 
 
 // 📌 4. MIDDLEWARE АУТЕНТИФИКАЦИИ
 // -------------------------------------------------------------
@@ -85,7 +91,7 @@ app.post('/api/register', async (req, res) => {
         await user.save();
         res.status(201).send({ message: 'Пользователь успешно зарегистрирован.' });
     } catch (error) {
-        if (error.code === 11000) { // Ошибка дубликата (пользователь уже существует)
+        if (error.code === 11000) { 
             return res.status(409).send({ message: 'Пользователь с таким именем уже существует.' });
         }
         res.status(500).send({ message: 'Ошибка сервера при регистрации.' });
@@ -119,7 +125,6 @@ app.post('/api/login', async (req, res) => {
 // 🔸 Получение ленты
 app.get('/api/feed', authenticateToken, async (req, res) => {
     try {
-        // В будущем здесь будет фильтрация по подпискам
         const posts = await Post.find().sort({ createdAt: -1 }).limit(50);
         res.send(posts);
     } catch (error) {
@@ -127,7 +132,7 @@ app.get('/api/feed', authenticateToken, async (req, res) => {
     }
 });
 
-// 🔸 Маршрут для получения данных профиля
+// 🔸 Получение данных профиля
 app.get('/api/profile/:username', authenticateToken, async (req, res) => {
     try {
         const targetUsername = req.params.username;
@@ -138,7 +143,6 @@ app.get('/api/profile/:username', authenticateToken, async (req, res) => {
             return res.status(404).send({ message: 'Пользователь не найден.' });
         }
         
-        // Определяем, подписан ли текущий пользователь на целевого
         const isFollowing = targetUser.followers.includes(req.user.id);
 
         res.send({
@@ -156,7 +160,7 @@ app.get('/api/profile/:username', authenticateToken, async (req, res) => {
     }
 });
 
-// 🔸 Маршрут для подписки/отписки (Follow/Unfollow)
+// 🔸 Подписка/Отписка (Follow/Unfollow)
 app.post('/api/follow/:userId', authenticateToken, async (req, res) => {
     try {
         const targetUserId = req.params.userId;
@@ -176,14 +180,12 @@ app.post('/api/follow/:userId', authenticateToken, async (req, res) => {
         const isFollowing = currentUser.following.includes(targetUserId);
 
         if (isFollowing) {
-            // ОТПИСКА (Unfollow)
             currentUser.following.pull(targetUserId);
             targetUser.followers.pull(currentUserId);
             await currentUser.save();
             await targetUser.save();
             res.send({ action: 'unfollowed', followersCount: targetUser.followers.length });
         } else {
-            // ПОДПИСКА (Follow)
             currentUser.following.push(targetUserId);
             targetUser.followers.push(currentUserId);
             await currentUser.save();
@@ -196,14 +198,62 @@ app.post('/api/follow/:userId', authenticateToken, async (req, res) => {
     }
 });
 
-// 📌 6. SOCKET.IO (Обработка постов и лайков)
+// 🔸 Добавление нового комментария
+app.post('/api/posts/:postId/comments', authenticateToken, async (req, res) => {
+    try {
+        const postId = req.params.postId;
+        const { content } = req.body;
+        
+        if (!content) {
+            return res.status(400).send({ message: 'Комментарий не может быть пустым.' });
+        }
+
+        const newComment = new Comment({
+            postId: postId,
+            authorId: req.user.id,
+            authorUsername: req.user.username,
+            content: content
+        });
+
+        await newComment.save();
+        
+        io.emit('new comment', {
+            _id: newComment._id,
+            postId: postId,
+            authorUsername: newComment.authorUsername,
+            content: newComment.content,
+            createdAt: newComment.createdAt
+        });
+
+        res.status(201).send(newComment);
+    } catch (error) {
+        console.error('Ошибка добавления комментария:', error);
+        res.status(500).send({ message: 'Ошибка сервера при добавлении комментария.' });
+    }
+});
+
+// 🔸 Получение комментариев к посту
+app.get('/api/posts/:postId/comments', authenticateToken, async (req, res) => {
+    try {
+        const postId = req.params.postId;
+        const comments = await Comment.find({ postId: postId })
+            .sort({ createdAt: 1 }) 
+            .limit(50);
+            
+        res.send(comments);
+    } catch (error) {
+        res.status(500).send({ message: 'Ошибка сервера при получении комментариев.' });
+    }
+});
+
+
+// 📌 6. SOCKET.IO (Обработка постов, лайков, комментариев)
 // -------------------------------------------------------------
 const io = socketIo(server);
 
 io.on('connection', (socket) => {
-    console.log(`Пользователь подключился: ${socket.id}`);
 
-    // Получение нового поста от клиента
+    // Новый пост
     socket.on('new post', async (data) => {
         try {
             const newPost = new Post({
@@ -213,7 +263,6 @@ io.on('connection', (socket) => {
             });
             await newPost.save();
             
-            // Отправляем новый пост всем клиентам
             io.emit('new post', {
                 _id: newPost._id,
                 content: newPost.content,
@@ -227,15 +276,14 @@ io.on('connection', (socket) => {
         }
     });
 
-    // Обработка лайков
+    // Лайки
     socket.on('post like', async (data) => {
         try {
             const post = await Post.findById(data.postId);
             if (post) {
-                post.likes += 1; // Упрощенная логика: просто увеличиваем счетчик
+                post.likes += 1;
                 await post.save();
                 
-                // Отправляем обновленное количество лайков всем
                 io.emit('like update', { 
                     postId: post._id, 
                     newLikes: post.likes 
@@ -244,10 +292,6 @@ io.on('connection', (socket) => {
         } catch (error) {
             console.error('Ошибка при лайке поста:', error);
         }
-    });
-
-    socket.on('disconnect', () => {
-        console.log(`Пользователь отключился: ${socket.id}`);
     });
 });
 

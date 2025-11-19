@@ -20,6 +20,7 @@ let isRegistering = false;
 let authToken = localStorage.getItem('authToken');
 let currentUsername = localStorage.getItem('currentUsername');
 let currentUserId = localStorage.getItem('currentUserId');
+let currentProfileView = 'feed'; // Текущий вид: 'feed' или имя пользователя
 
 // ------------------------------------------
 // 📌 2. ФУНКЦИИ УПРАВЛЕНИЯ ЭКРАНОМ
@@ -44,9 +45,8 @@ function showAuthScreen() {
     isRegistering = false;
     loginButton.textContent = 'Войти';
     registerToggle.textContent = 'Регистрация';
-
-    // Установка заголовка (на случай, если пользователь кликнул на него)
     welcomeUser.textContent = 'Моя Соцсеть'; 
+    postsList.innerHTML = ''; // Очистка ленты
 }
 
 function showSocialScreen(username) {
@@ -59,13 +59,14 @@ function showSocialScreen(username) {
 }
 
 // ------------------------------------------
-// 📌 3. ФУНКЦИИ ЗАГРУЗКИ ДАННЫХ
+// 📌 3. ФУНКЦИИ ЗАГРУЗКИ И РЕНДЕРИНГА
 // ------------------------------------------
 
 // Загрузка ленты (главная страница)
 async function loadFeed() {
-    postsList.innerHTML = ''; // Очищаем старую ленту
-    document.getElementById('new-post-area').style.display = 'block'; // Показываем форму поста
+    postsList.innerHTML = ''; 
+    document.getElementById('new-post-area').style.display = 'block'; 
+    currentProfileView = 'feed';
 
     try {
         const response = await fetch('/api/feed', {
@@ -79,16 +80,14 @@ async function loadFeed() {
             });
         } else if (response.status === 401 || response.status === 403) {
             showAuthScreen();
-        } else {
-            console.error('Ошибка загрузки ленты.');
-        }
+        } 
 
     } catch (error) {
         console.error('Ошибка сети при загрузке ленты:', error);
     }
 }
 
-// Рендеринг одного поста (обновлено для лучшего дизайна и ссылки на профиль)
+// Рендеринг одного поста 
 function renderPost(post) {
     const li = document.createElement('li');
     li.className = 'post-item';
@@ -109,15 +108,23 @@ function renderPost(post) {
             <div>
                 <button class="like-button" onclick="handleLike('${post._id || post.id}')">❤️</button>
                 <span class="likes-count">${post.likes}</span>
+                <button class="comment-toggle-button" data-post-id="${post._id || post.id}" onclick="toggleComments(this)">💬</button> 
             </div>
             <span class="post-date">${date}</span>
+        </div>
+        <div class="comments-section" id="comments-${post._id || post.id}" style="display: none;">
+            <ul class="comments-list" data-post-id="${post._id || post.id}"></ul>
+            <form class="comment-form" data-post-id="${post._id || post.id}" onsubmit="handleCommentSubmit(event, this)">
+                <input type="text" placeholder="Добавить комментарий..." required>
+                <button type="submit">ОК</button>
+            </form>
         </div>
     `;
     return li;
 }
 
 // ------------------------------------------
-// 📌 4. ОБРАБОТЧИКИ СОБЫТИЙ (КЛИЕНТ-СЕРВЕР)
+// 📌 4. ОБРАБОТЧИКИ АУТЕНТИФИКАЦИИ И ПОСТОВ
 // ------------------------------------------
 
 // Обработка регистрации/входа
@@ -189,7 +196,7 @@ postForm.addEventListener('submit', (e) => {
             username: currentUsername, 
             userId: currentUserId 
         });
-        e.target['post-content'].value = ''; // Очистка
+        e.target['post-content'].value = ''; 
     }
 });
 
@@ -204,14 +211,11 @@ function handleLike(postId) {
 // 📌 5. ПРОФИЛЬ И ПОДПИСКИ
 // ------------------------------------------
 
-// Переменная для хранения текущего отображаемого профиля (для возврата)
-let currentProfileView = 'feed'; 
-
 // Загрузка и отображение профиля
 async function loadProfile(username) {
-    // Временно скрываем ленту и форму поста
     document.getElementById('new-post-area').style.display = 'none';
-    postsList.innerHTML = ''; // Очищаем ленту
+    postsList.innerHTML = ''; 
+    currentProfileView = username;
 
     try {
         const response = await fetch(`/api/profile/${username}`, {
@@ -231,7 +235,6 @@ async function loadProfile(username) {
                     </p>
             `;
             
-            // Если это не наш профиль, показываем кнопку подписки/отписки
             if (user.username !== currentUsername) {
                 profileHtml += `<button id="follow-button" data-user-id="${user.id}" class="follow-btn ${isFollowing ? 'unfollow-btn' : ''}">
                     ${isFollowing ? 'Отписаться' : 'Подписаться'}
@@ -242,10 +245,9 @@ async function loadProfile(username) {
             
             postsList.innerHTML = profileHtml; 
             
-            // Здесь должна быть логика для загрузки постов этого пользователя (пока пропустим)
+            // Заглушка для постов профиля
             postsList.innerHTML += `<p style="padding: 0 20px; max-width: 500px; margin: 5px auto;">Функция загрузки постов профиля в разработке.</p>`;
 
-            // Добавляем обработчик на кнопку подписки
             if (user.username !== currentUsername) {
                 document.getElementById('follow-button').addEventListener('click', handleFollow);
             }
@@ -275,7 +277,6 @@ async function handleFollow(e) {
         if (response.ok) {
             const data = await response.json();
             
-            // Обновляем текст кнопки и классы
             if (data.action === 'followed') {
                 button.textContent = 'Отписаться';
                 button.classList.add('unfollow-btn');
@@ -284,9 +285,9 @@ async function handleFollow(e) {
                 button.classList.remove('unfollow-btn');
             }
             
-            // Обновляем счетчик подписчиков в HTML (ищем ближайший элемент с количеством)
             const profileArea = document.getElementById('profile-area');
-            const countElement = profileArea.querySelector('p strong');
+            // Обновляем счетчик подписчиков
+            const countElement = profileArea.querySelector('p strong:first-child'); 
             if (countElement) countElement.textContent = data.followersCount;
 
         } else if (response.status === 401 || response.status === 403) {
@@ -300,15 +301,100 @@ async function handleFollow(e) {
     }
 }
 
+// ------------------------------------------
+// 📌 6. КОММЕНТАРИИ
+// ------------------------------------------
+
+// Рендеринг одного комментария
+function renderComment(comment) {
+    const li = document.createElement('li');
+    li.innerHTML = `
+        <div style="font-size: 0.9em; margin-bottom: 5px;">
+            <strong class="profile-link" data-username="${comment.authorUsername}">${comment.authorUsername}:</strong> 
+            ${comment.content}
+        </div>
+    `;
+    return li;
+}
+
+// Переключение видимости комментариев и их загрузка
+async function toggleComments(button) {
+    const postId = button.dataset.postId;
+    const commentsSection = document.getElementById(`comments-${postId}`);
+    const commentsList = commentsSection.querySelector('.comments-list');
+
+    if (commentsSection.style.display === 'none') {
+        commentsSection.style.display = 'block';
+        commentsList.innerHTML = '<li>Загрузка комментариев...</li>';
+
+        try {
+            const response = await fetch(`/api/posts/${postId}/comments`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+            
+            if (response.ok) {
+                const comments = await response.json();
+                commentsList.innerHTML = ''; 
+                if (comments.length === 0) {
+                    commentsList.innerHTML = '<li style="color: #666; font-size: 0.9em;">Комментариев пока нет.</li>';
+                } else {
+                    comments.forEach(comment => {
+                        commentsList.appendChild(renderComment(comment));
+                    });
+                }
+            } else {
+                 commentsList.innerHTML = '<li style="color: red; font-size: 0.9em;">Ошибка загрузки.</li>';
+            }
+        } catch (error) {
+            console.error('Ошибка загрузки комментариев:', error);
+        }
+
+    } else {
+        commentsSection.style.display = 'none';
+    }
+}
+
+// Отправка нового комментария
+async function handleCommentSubmit(e, form) {
+    e.preventDefault();
+    const postId = form.dataset.postId;
+    const input = form.querySelector('input');
+    const content = input.value;
+
+    try {
+        const response = await fetch(`/api/posts/${postId}/comments`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify({ content })
+        });
+
+        if (response.ok) {
+            input.value = ''; 
+        } else if (response.status === 401 || response.status === 403) {
+            showAuthScreen();
+        } else {
+            alert('Не удалось отправить комментарий.');
+        }
+
+    } catch (error) {
+        console.error('Ошибка отправки комментария:', error);
+    }
+}
+
 
 // ------------------------------------------
-// 📌 6. SOCKET.IO (Обновление в реальном времени)
+// 📌 7. SOCKET.IO (Обновление в реальном времени)
 // ------------------------------------------
 
 // Получение нового поста от сервера
 socket.on('new post', (post) => {
-    const newPostElement = renderPost(post);
-    postsList.prepend(newPostElement);
+    if (currentProfileView === 'feed') {
+        const newPostElement = renderPost(post);
+        postsList.prepend(newPostElement);
+    }
 });
 
 // Обновление счетчика лайков в реальном времени
@@ -320,27 +406,38 @@ socket.on('like update', (data) => {
     }
 });
 
+// Получение нового комментария от сервера
+socket.on('new comment', (comment) => {
+    const commentsList = document.querySelector(`.comments-list[data-post-id="${comment.postId}"]`);
+    
+    if (commentsList && commentsList.parentElement.style.display !== 'none') {
+        if (commentsList.children.length === 1 && commentsList.children[0].textContent.includes('Комментариев пока нет.')) {
+            commentsList.innerHTML = '';
+        }
+        
+        commentsList.appendChild(renderComment(comment));
+    }
+});
+
 
 // ------------------------------------------
-// 📌 7. ОБРАБОТЧИКИ КЛИКА И ИНИЦИАЛИЗАЦИЯ
+// 📌 8. ОБРАБОТЧИКИ КЛИКА И ИНИЦИАЛИЗАЦИЯ
 // ------------------------------------------
 
 // Делегирование события клика для перехода в профиль
 document.addEventListener('click', (e) => {
     // Клик на имя пользователя (автора поста)
     if (e.target.classList.contains('profile-link')) {
-        e.preventDefault(); // Предотвращаем стандартное действие ссылки
+        e.preventDefault(); 
         const username = e.target.dataset.username;
         if (username) {
             loadProfile(username);
-            currentProfileView = username;
         }
     }
     // Кнопка в заголовке для возврата в ленту (ваше имя)
     if (e.target.id === 'welcome-user') {
         if (currentProfileView !== 'feed') {
-            loadFeed(); // Возвращаемся к ленте
-            currentProfileView = 'feed';
+            loadFeed(); 
         }
     }
 });

@@ -73,7 +73,7 @@ header {
     background: #ffffff;
     border-bottom: 1px solid #dbdbdb;
     padding: 10px 20px;
-    position: sticky; /* Фиксируем шапку */
+    position: sticky; 
     top: 0;
     z-index: 100;
 }
@@ -132,7 +132,7 @@ header {
     margin: 20px auto;
     display: flex;
     flex-direction: column; 
-    gap: 20px; /* Промежутки между постами */
+    gap: 20px; 
 }
 
 .post-item {
@@ -155,7 +155,7 @@ header {
 .post-author {
     color: #262626; 
     cursor: pointer; 
-    text-decoration: none; /* Убираем подчеркивание */
+    text-decoration: none; 
 }
 
 .post-content-text {
@@ -184,8 +184,42 @@ header {
 }
 
 .like-button {
-    color: #ed4956 !important; /* Красный цвет лайка */
+    color: #ed4956 !important; 
     transition: transform 0.1s;
+}
+
+/* Комментарии */
+.comments-section {
+    padding: 5px 15px;
+    border-top: 1px solid #eee;
+}
+
+.comments-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.comment-form {
+    display: flex;
+    padding-bottom: 5px;
+}
+
+.comment-form input {
+    flex-grow: 1;
+    border: 1px solid #eee;
+    padding: 5px;
+    margin-right: 5px;
+    border-radius: 3px;
+}
+
+.comment-form button {
+    font-size: 0.9em;
+    padding: 5px 10px;
+    background-color: #0095f6;
+    color: white;
+    font-weight: normal;
 }
 
 /* ========================================= */
@@ -206,11 +240,6 @@ header {
     margin-bottom: 10px;
 }
 
-#profile-area p {
-    margin: 5px 0;
-    color: #666;
-}
-
 .follow-btn {
     background-color: #0095f6;
     color: white;
@@ -228,7 +257,6 @@ header {
     border: 1px solid #dbdbdb;
 }
 
-/* Стили для ссылок, чтобы выглядели как текст */
 .stat-link {
     cursor: pointer;
     font-weight: bold;
