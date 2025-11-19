@@ -1,29 +1,44 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Всемирный Чат (Социальная Сеть)</title>
+    <title>Моя Соцсеть</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="username-area">
-        <form id="username-form">
-            <h2>Добро пожаловать во Всемирный Чат!</h2>
-            <input id="username-input" autocomplete="off" placeholder="Введите ваше имя" required />
-            <button type="submit">Войти в Чат</button>
+
+    <div id="auth-area">
+        <h2>Добро пожаловать</h2>
+        <form id="auth-form">
+            <input type="text" id="auth-username" placeholder="Имя пользователя" required>
+            <input type="password" id="auth-password" placeholder="Пароль" required>
+            <button type="submit" id="login-button">Войти</button>
+            <button type="button" id="register-toggle">Регистрация</button>
+            <p id="auth-message" class="error-message"></p>
         </form>
     </div>
 
-    <div id="chat-container" style="display:none;">
-        <h1>💬 Всемирный Чат</h1>
-        <ul id="messages"></ul>
-        <form id="message-form" action="">
-            <input id="input" autocomplete="off" placeholder="Введите сообщение..." /><button>Отправить</button>
-        </form>
+    <div id="social-container" style="display: none;">
+        <header>
+            <h1><span id="welcome-user"></span></h1>
+            <button id="logout-button">Выйти</button>
+        </header>
+
+        <div id="new-post-area">
+            <h3>Создать новый пост</h3>
+            <form id="post-form">
+                <textarea id="post-content" placeholder="Что у вас нового?" rows="3" required></textarea>
+                <button type="submit">Опубликовать</button>
+            </form>
+        </div>
+        
+        <div id="feed">
+            <h2>Ваша Лента Новостей</h2>
+            <ul id="posts-list">
+                </ul>
+        </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="chat.js"></script>
+    <script src="client.js"></script>
 </body>
 </html>

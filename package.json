@@ -1,13 +1,16 @@
 {
-  "name": "public-social-chat",
+  "name": "public-social-network",
   "version": "1.0.0",
-  "description": "A public, worldwide chat application with usernames using Node.js and Socket.IO.",
+  "description": "A public, worldwide social network using Node.js, Socket.IO, and MongoDB.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.19.2",
-    "socket.io": "^4.7.5"
+    "socket.io": "^4.7.5",
+    "mongoose": "^8.4.1",
+    "bcrypt": "^5.1.1",
+    "jsonwebtoken": "^9.0.2"
   }
 }

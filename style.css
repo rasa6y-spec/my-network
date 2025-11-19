@@ -1,39 +1,36 @@
-/* Основные стили */
-body { 
-    margin: 0; 
-    padding: 0; 
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-    background-color: #f4f7f6; 
+body {  
+    margin: 0;  
+    padding: 0;  
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;  
+    background-color: #f4f7f6;  
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; 
     min-height: 100vh;
+    padding-top: 50px;
 }
 
-/* Область ввода имени пользователя */
-#username-area {
+/* Область Аутентификации */
+#auth-area {
     background: white;
     padding: 30px;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     text-align: center;
+    width: 350px;
 }
 
-#username-area h2 {
-    color: #333;
-    margin-bottom: 20px;
-}
-
-#username-form input {
+#auth-form input {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    width: 250px;
-    margin-right: 10px;
+    width: 100%;
+    margin-bottom: 15px;
     font-size: 1rem;
+    box-sizing: border-box;
 }
 
-#username-form button {
+#auth-form button {
     padding: 10px 20px;
     background: #007bff;
     color: white;
@@ -41,17 +38,18 @@ body {
     border-radius: 4px;
     cursor: pointer;
     transition: background 0.3s;
+    width: 48%;
+    margin-right: 2%;
 }
 
-#username-form button:hover {
+#auth-form button:hover {
     background: #0056b3;
 }
 
-/* Контейнер чата */
-#chat-container {
+/* Контейнер Соцсети */
+#social-container {
     width: 100%;
-    max-width: 600px;
-    height: 80vh; /* Высокий контейнер */
+    max-width: 650px;
     background: white;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -59,97 +57,122 @@ body {
     flex-direction: column;
 }
 
-#chat-container h1 {
-    text-align: center;
-    color: #007bff;
-    padding: 10px;
-    margin: 0;
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
     border-bottom: 1px solid #eee;
 }
 
-/* Список сообщений */
-#messages { 
-    list-style-type: none; 
-    padding: 10px; 
+header h1 {
+    color: #007bff;
+    font-size: 1.5rem;
     margin: 0;
-    flex-grow: 1; 
-    overflow-y: auto; /* Автоматическая прокрутка */
 }
 
-#messages li { 
-    padding: 8px 12px; 
+#logout-button {
+    padding: 8px 15px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Форма нового поста */
+#new-post-area {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+#new-post-area h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+#post-content {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: none;
     margin-bottom: 10px;
-    background: #eef;
-    border-radius: 18px;
-    max-width: 80%;
-    word-wrap: break-word; 
-    line-height: 1.4;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
 }
 
-/* Стили для имени пользователя внутри сообщения */
-#messages li .username {
+#post-form button {
+    padding: 10px 20px;
+    background: #28a745; 
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    float: right;
+}
+
+/* Лента постов */
+#feed {
+    padding: 20px;
+}
+
+#feed h2 {
+    font-size: 1.2rem;
+    color: #555;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+
+#posts-list {
+    list-style-type: none;  
+    padding: 0;  
+    margin: 0;
+}
+
+/* Стиль отдельного поста */
+.post-item {  
+    padding: 15px;  
+    margin-bottom: 15px;
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.post-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 0.9em;
+    color: #6c757d;
+}
+
+.post-author {
     font-weight: bold;
     color: #007bff;
-    margin-right: 5px;
 }
 
-/* Стили для системных сообщений (присоединение/отключение) */
-#messages li.system-message {
-    text-align: center;
-    background: #fff3cd; /* Желтоватый фон */
-    color: #856404;
-    font-style: italic;
-    font-size: 0.9em;
-    padding: 5px 10px;
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 90%;
+.post-content-text {
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 15px;
 }
 
-/* Стили для ваших собственных сообщений */
-#messages li.my-message {
-    background: #d4edda; /* Зеленоватый фон */
-    color: #155724;
-    margin-left: auto; /* Выравнивание вправо */
-}
-
-#messages li.my-message .username {
-    color: #155724; /* Темно-зеленый */
-}
-
-/* Форма отправки */
-#message-form { 
-    background: #fff; 
-    padding: 10px; 
-    display: flex; 
-    border-top: 1px solid #eee;
-}
-
-#input { 
-    border: 1px solid #ccc; 
-    padding: 10px; 
-    flex-grow: 1; 
-    margin-right: 10px;
-    border-radius: 4px;
-    font-size: 1rem;
-}
-
-#input:focus { 
-    outline: none; 
-    border-color: #007bff;
-}
-
-#message-form button { 
-    background: #007bff; 
-    border: none; 
-    padding: 10px 20px; 
-    border-radius: 4px;
-    color: white; 
+.post-actions button {
+    background: none;
+    border: none;
+    color: #6c757d;
     cursor: pointer;
-    transition: background 0.3s;
+    font-size: 0.9em;
 }
 
-#message-form button:hover {
-    background: #0056b3;
+.post-actions .like-button {
+    color: #dc3545; 
+    font-weight: bold;
+}
+
+.error-message {
+    color: #dc3545;
+    margin-top: 10px;
 }
