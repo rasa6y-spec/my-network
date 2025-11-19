@@ -1,178 +1,237 @@
-body {  
-    margin: 0;  
-    padding: 0;  
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;  
-    background-color: #f4f7f6;  
+/* ========================================= */
+/* БАЗОВЫЕ СТИЛИ */
+/* ========================================= */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #fafafa; /* Фон Instagram */
+    margin: 0;
+    padding: 0;
     display: flex;
     justify-content: center;
-    align-items: flex-start; 
-    min-height: 100vh;
-    padding-top: 50px;
 }
 
-/* Область Аутентификации */
-#auth-area {
-    background: white;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    width: 350px;
-}
-
-#auth-form input {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+#auth-area, #social-container {
     width: 100%;
-    margin-bottom: 15px;
-    font-size: 1rem;
+    max-width: 850px;
     box-sizing: border-box;
 }
 
+/* ========================================= */
+/* АВТОРИЗАЦИЯ */
+/* ========================================= */
+#auth-area {
+    margin-top: 50px;
+    text-align: center;
+}
+
+#auth-form {
+    background: #fff;
+    border: 1px solid #dbdbdb;
+    padding: 40px;
+    width: 350px;
+    margin: 20px auto;
+    border-radius: 5px;
+}
+
+#auth-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #dbdbdb;
+    box-sizing: border-box;
+    border-radius: 3px;
+}
+
 #auth-form button {
-    padding: 10px 20px;
-    background: #007bff;
+    width: 100%;
+    padding: 10px;
+    background-color: #0095f6;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 3px;
     cursor: pointer;
-    transition: background 0.3s;
-    width: 48%;
-    margin-right: 2%;
+    font-weight: bold;
+    margin-top: 5px;
 }
 
-#auth-form button:hover {
-    background: #0056b3;
+#auth-message {
+    color: red;
+    margin-top: 10px;
 }
 
-/* Контейнер Соцсети */
+/* ========================================= */
+/* ИНТЕРФЕЙС СОЦСЕТИ (Instagram-like) */
+/* ========================================= */
 #social-container {
-    width: 100%;
-    max-width: 650px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
+    padding: 0;
 }
 
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
-    border-bottom: 1px solid #eee;
+    background: #ffffff;
+    border-bottom: 1px solid #dbdbdb;
+    padding: 10px 20px;
+    position: sticky; /* Фиксируем шапку */
+    top: 0;
+    z-index: 100;
 }
 
-header h1 {
-    color: #007bff;
-    font-size: 1.5rem;
-    margin: 0;
-}
-
-#logout-button {
-    padding: 8px 15px;
-    background: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 4px;
+#welcome-user {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #262626;
     cursor: pointer;
 }
 
-/* Форма нового поста */
-#new-post-area {
-    padding: 20px;
-    border-bottom: 1px solid #eee;
+#logout-button {
+    background-color: #ed4956;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
 }
 
-#new-post-area h3 {
-    margin-top: 0;
-    color: #333;
+/* ========================================= */
+/* ПОСТЫ И ЛЕНТА */
+/* ========================================= */
+#new-post-area {
+    max-width: 500px;
+    margin: 20px auto;
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #dbdbdb;
+    border-radius: 3px;
 }
 
 #post-content {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    resize: none;
     margin-bottom: 10px;
+    border: 1px solid #dbdbdb;
     box-sizing: border-box;
+    border-radius: 3px;
+    resize: vertical;
 }
 
 #post-form button {
-    padding: 10px 20px;
-    background: #28a745; 
+    background-color: #0095f6;
     color: white;
     border: none;
-    border-radius: 4px;
+    padding: 8px 15px;
+    border-radius: 3px;
     cursor: pointer;
-    float: right;
-}
-
-/* Лента постов */
-#feed {
-    padding: 20px;
-}
-
-#feed h2 {
-    font-size: 1.2rem;
-    color: #555;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
-    margin-top: 0;
+    font-weight: bold;
 }
 
 #posts-list {
-    list-style-type: none;  
-    padding: 0;  
-    margin: 0;
-}
-
-/* Стиль отдельного поста */
-.post-item {  
-    padding: 15px;  
-    margin-bottom: 15px;
-    background: #fff;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.post-meta {
+    list-style: none;
+    padding: 0;
+    margin: 20px auto;
     display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    font-size: 0.9em;
-    color: #6c757d;
+    flex-direction: column; 
+    gap: 20px; /* Промежутки между постами */
+}
+
+.post-item {
+    border: 1px solid #dbdbdb;
+    border-radius: 3px;
+    max-width: 500px;
+    margin: 0 auto; 
+    background: #fff;
+    box-sizing: border-box;
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    font-weight: bold;
+    border-bottom: 1px solid #eee;
 }
 
 .post-author {
-    font-weight: bold;
-    color: #007bff;
+    color: #262626; 
+    cursor: pointer; 
+    text-decoration: none; /* Убираем подчеркивание */
 }
 
 .post-content-text {
-    line-height: 1.6;
-    color: #333;
-    margin-bottom: 15px;
+    padding: 15px;
+    word-wrap: break-word;
+}
+
+.post-actions {
+    padding: 5px 15px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.9em;
+    color: #8e8e8e;
+    border-top: 1px solid #eee;
 }
 
 .post-actions button {
     background: none;
     border: none;
-    color: #6c757d;
     cursor: pointer;
-    font-size: 0.9em;
+    font-size: 1.5em;
+    padding: 0;
+    margin-right: 10px;
+    color: #262626;
 }
 
-.post-actions .like-button {
-    color: #dc3545; 
+.like-button {
+    color: #ed4956 !important; /* Красный цвет лайка */
+    transition: transform 0.1s;
+}
+
+/* ========================================= */
+/* ПРОФИЛЬ */
+/* ========================================= */
+#profile-area {
+    max-width: 500px;
+    margin: 20px auto;
+    background: #fff;
+    padding: 30px;
+    border: 1px solid #dbdbdb;
+    border-radius: 3px;
+    text-align: center;
+}
+
+#profile-area h3 {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+}
+
+#profile-area p {
+    margin: 5px 0;
+    color: #666;
+}
+
+.follow-btn {
+    background-color: #0095f6;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 3px;
+    cursor: pointer;
     font-weight: bold;
+    margin-top: 15px;
 }
 
-.error-message {
-    color: #dc3545;
-    margin-top: 10px;
+.unfollow-btn {
+    background-color: #dbdbdb;
+    color: #262626;
+    border: 1px solid #dbdbdb;
+}
+
+/* Стили для ссылок, чтобы выглядели как текст */
+.stat-link {
+    cursor: pointer;
+    font-weight: bold;
+    color: #262626;
+    text-decoration: none;
 }
