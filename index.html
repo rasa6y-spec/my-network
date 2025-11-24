@@ -3,43 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Моя Соцсеть</title>
+    <title>Momento — Ваша Соцсеть</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
-
-    <div id="auth-area" style="display: none;">
-        <h2>Добро пожаловать</h2>
-        <form id="auth-form">
-            <input type="text" id="username" placeholder="Имя пользователя" required>
-            <input type="password" id="password" placeholder="Пароль" required>
-            <button type="submit" id="login-button">Войти</button>
-            <p id="auth-message"></p>
-            <button type="button" id="register-toggle">Регистрация</button>
-        </form>
+    
+    <div id="auth-area">
+        <h1>Momento</h1>
+        <div id="auth-form-container">
+            <form id="login-form">
+                <h2>Вход</h2>
+                <input type="text" id="login-username" placeholder="Имя пользователя" required>
+                <input type="password" id="login-password" placeholder="Пароль" required>
+                <button type="submit">Войти</button>
+                <p>Нет аккаунта? <a href="#" id="show-register">Зарегистрироваться</a></p>
+                <div id="login-error" class="error-message"></div>
+            </form>
+            
+            <form id="register-form" style="display: none;">
+                <h2>Регистрация</h2>
+                <input type="text" id="register-username" placeholder="Имя пользователя" required>
+                <input type="password" id="register-password" placeholder="Пароль" required>
+                <button type="submit">Создать аккаунт</button>
+                <p>Уже есть аккаунт? <a href="#" id="show-login">Войти</a></p>
+                <div id="register-error" class="error-message"></div>
+            </form>
+        </div>
     </div>
 
     <div id="social-container" style="display: none;">
-        <header>
-            <span id="welcome-user">Моя Соцсеть</span>
-            <button id="logout-button">Выйти</button>
-        </header>
-
-        <div id="new-post-area">
-            <h3>Создать новый пост</h3>
-            <form id="post-form">
-                <textarea id="post-content" placeholder="Что у вас нового?" rows="3" required></textarea>
-                <button type="submit">Опубликовать</button>
-            </form>
+        
+        <div id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">Momento</div>
+            </div>
+            <nav>
+                <a href="#" class="nav-item active" onclick="showView('feed'); loadFeed()">
+                    <i class="fa-solid fa-house"></i> <span>Лента</span>
+                </a>
+                <a href="#" class="nav-item profile-link" onclick="loadProfile(currentUsername)">
+                    <i class="fa-solid fa-user"></i> <span>Профиль</span>
+                </a>
+                <a href="#" class="nav-item" onclick="showView('messages'); loadChats()">
+                    <i class="fa-solid fa-comment"></i> <span>Сообщения</span>
+                </a>
+                <a href="#" class="nav-item" onclick="showView('groups');">
+                    <i class="fa-solid fa-users"></i> <span>Группы</span>
+                </a>
+                <a href="#" class="nav-item" id="logout-button">
+                    <i class="fa-solid fa-right-from-bracket"></i> <span>Выход</span>
+                </a>
+            </nav>
         </div>
         
-        <div id="feed">
-            <ul id="posts-list">
-                </ul>
+        <div id="top-bar">
+            <div class="top-bar-left">
+                <div class="logo-desktop">Momento</div>
+            </div>
+            <div class="top-bar-right">
+                <div id="current-user-profile-icon" class="profile-icon-wrapper" onclick="toggleProfileDropdown()">
+                    <img id="top-bar-avatar" src="https://i.ibb.co/L8229Fq/default-avatar.png" alt="Аватар">
+                    <span id="top-bar-username"></span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div id="profile-dropdown" class="profile-dropdown-content">
+                    <a href="#" class="dropdown-item" onclick="loadProfile(currentUsername); toggleProfileDropdown()">
+                        <i class="fa-solid fa-user"></i> Мой профиль
+                    </a>
+                    <a href="#" class="dropdown-item" onclick="openEditProfileModal(); toggleProfileDropdown()">
+                        <i class="fa-solid fa-gear"></i> Настройки
+                    </a>
+                    <a href="#" class="dropdown-item" id="dropdown-logout-button">
+                        <i class="fa-solid fa-right-from-bracket"></i> Выход
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div id="main-content">
+            
+            <div id="feed" style="display: none;">
+                <div id="new-post-area-inline" class="new-post-inline-vk">
+                    <img id="new-post-inline-avatar" src="https://i.ibb.co/L8229Fq/default-avatar.png" alt="Аватар" class="new-post-inline-avatar">
+                    <input type="text" id="post-content-inline" placeholder="Что у вас нового?">
+                    <button id="submit-post-inline" class="post-inline-button" title="Опубликовать">
+                        <i class="fa-solid fa-pencil"></i>
+                    </button>
+                    <button id="attach-photo-inline" class="post-inline-button" title="Прикрепить фото">
+                        <i class="fa-solid fa-image"></i>
+                    </button>
+                </div>
+                <ul id="posts-list">
+                    </ul>
+            </div>
+            
+            <div id="profile-view" style="display: none;">
+                <div id="profile-header">
+                    <img id="profile-banner" src="https://i.ibb.co/2P157M4/default-banner.png" alt="Баннер">
+                    <div id="profile-info-card">
+                        <img id="profile-avatar" src="https://i.ibb.co/L8229Fq/default-avatar.png" alt="Аватар">
+                        <h2 id="profile-username"></h2>
+                        <p id="profile-bio"></p>
+                        <div class="profile-stats">
+                            <span id="followers-count">Подписчики: 0</span>
+                            <span id="following-count">Подписки: 0</span>
+                        </div>
+                        <div id="profile-actions">
+                            </div>
+                    </div>
+                </div>
+                <div id="user-posts-list">
+                    </div>
+            </div>
+
+            <div id="messages-area" style="display: none;">
+                <div id="chat-list-container">
+                    <h3>Чаты</h3>
+                    <ul id="chat-list">
+                        </ul>
+                </div>
+                <div id="chat-window" style="display: none;">
+                    <div id="chat-header">
+                        <button id="back-to-chats" style="display: none;">&larr;</button>
+                        <h3 id="chat-partner-name"></h3>
+                    </div>
+                    <div id="messages-container">
+                        </div>
+                    <div id="message-input-area">
+                        <input type="text" id="message-content" placeholder="Написать сообщение..." disabled>
+                        <button id="send-message" disabled><i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="groups-area" style="display: none;">
+                <h2>Группы</h2>
+                <p>Раздел "Группы" пока находится в разработке.</p>
+            </div>
+
+        </div>
+
+        <div id="mobile-nav">
+            <a href="#" class="nav-item active" onclick="showView('feed'); loadFeed()">
+                <i class="fa-solid fa-house"></i>
+            </a>
+            <a href="#" class="nav-item profile-link" onclick="loadProfile(currentUsername)">
+                <i class="fa-solid fa-user"></i>
+            </a>
+            <a href="#" class="nav-item" onclick="showView('messages'); loadChats()">
+                <i class="fa-solid fa-comment"></i>
+            </a>
+            <a href="#" class="nav-item" onclick="showView('groups');">
+                <i class="fa-solid fa-users"></i>
+            </a>
         </div>
     </div>
     
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <div id="edit-profile-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="document.getElementById('edit-profile-modal').style.display='none'">&times;</span>
+            <h3>Редактировать профиль</h3>
+            <form id="edit-profile-form">
+                <label for="edit-bio">О себе (Bio):</label>
+                <textarea id="edit-bio" rows="3"></textarea>
+                <label for="edit-avatar-url">URL аватара:</label>
+                <input type="url" id="edit-avatar-url">
+                <label for="edit-banner-url">URL баннера:</label>
+                <input type="url" id="edit-banner-url">
+                <button type="submit">Сохранить изменения</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="comments-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="document.getElementById('comments-modal').style.display='none'">&times;</span>
+            <h3>Комментарии</h3>
+            <div id="comments-list"></div>
+            <div id="comment-input-area">
+                <input type="text" id="comment-content" placeholder="Написать комментарий..." required>
+                <button id="submit-comment">Отправить</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
     <script src="client.js"></script>
 </body>
 </html>
