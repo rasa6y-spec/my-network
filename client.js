@@ -12,6 +12,10 @@ let currentChatId = null;
 let currentPartnerId = null;
 let socket = null;
 
+// Стандартные заглушки
+const DEFAULT_AVATAR = 'https://i.ibb.co/L8229Fq/default-avatar.png';
+const DEFAULT_BANNER = 'https://i.ibb.co/2P157M4/default-banner.png';
+
 // DOM элементы
 const authArea = document.getElementById('auth-area');
 const socialContainer = document.getElementById('social-container');
@@ -79,6 +83,15 @@ function saveAuthData(data) {
     localStorage.setItem('token', token);
     localStorage.setItem('username', currentUsername);
     localStorage.setItem('userId', currentUserId);
+    // Сохраняем дополнительные поля, если есть
+    localStorage.setItem('userBio', data.user.bio || '');
+    localStorage.setItem('avatarUrl', data.user.avatarUrl || DEFAULT_AVATAR);
+    localStorage.setItem('bannerUrl', data.user.bannerUrl || DEFAULT_BANNER);
+}
+
+function handleLogout() {
+    localStorage.clear();
+    location.reload(); 
 }
 
 async function handleAuth(event, endpoint, errorElement) {
@@ -111,12 +124,6 @@ async function handleAuth(event, endpoint, errorElement) {
     }
 }
 
-function handleLogout() {
-    localStorage.clear();
-    location.reload(); 
-}
-
-
 // ===============================================
 // 3. УПРАВЛЕНИЕ ИНТЕРФЕЙСОМ И НАВИГАЦИЕЙ
 // ===============================================
@@ -133,17 +140,23 @@ function showSocialScreen(username) {
     // Обновляем верхнюю панель
     const topBarUsername = document.getElementById('top-bar-username');
     const topBarAvatar = document.getElementById('top-bar-avatar');
+    
     if (topBarUsername) topBarUsername.textContent = username;
     if (topBarAvatar) {
-        topBarAvatar.src = localStorage.getItem('avatarUrl') || 'https://i.ibb.co/L8229Fq/default-avatar.png';
+        // Убеждаемся, что всегда есть аватар
+        topBarAvatar.src = localStorage.getItem('avatarUrl') || DEFAULT_AVATAR;
     }
-    document.getElementById('new-post-inline-avatar').src = localStorage.getItem('avatarUrl') || 'https://i.ibb.co/L8229Fq/default-avatar.png';
+    // Обновляем инлайн-аватар поста
+    document.getElementById('new-post-inline-avatar').src = localStorage.getItem('avatarUrl') || DEFAULT_AVATAR;
 
-    // Обновляем ссылки на профиль
+    // Обновляем ссылки на профиль в навигации
     [mobileNav, sidebar].forEach(container => {
         const profileLink = container.querySelector('.profile-link');
         if (profileLink) {
-            profileLink.onclick = () => loadProfile(currentUsername);
+            profileLink.onclick = (e) => {
+                e.preventDefault();
+                loadProfile(currentUsername);
+            };
         }
     });
 
@@ -166,25 +179,22 @@ function showView(view) {
 
     currentView = view;
     
+    // Снимаем активный класс со всех элементов
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+
     // Показываем нужную область
     if (view === 'feed') { 
         feedArea.style.display = 'block';
         newPostAreaInline.style.display = 'flex';
-        // Устанавливаем активный класс
-        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
         document.querySelector('.nav-item[onclick*="feed"]').classList.add('active');
     } else if (view === 'profile') {
         profileView.style.display = 'block';
-        // Устанавливаем активный класс для профиля
-        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
         document.querySelector('.nav-item[onclick*="profile"]').classList.add('active');
     } else if (view === 'messages') {
         messagesArea.style.display = 'flex'; 
-        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
         document.querySelector('.nav-item[onclick*="messages"]').classList.add('active');
     } else if (view === 'groups') {
         groupsArea.style.display = 'block';
-        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
         document.querySelector('.nav-item[onclick*="groups"]').classList.add('active');
     }
 }
@@ -195,7 +205,6 @@ function toggleProfileDropdown() {
     dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
 }
 
-// Закрытие дропдауна при клике вне его
 window.addEventListener('click', function(event) {
     const profileIcon = document.getElementById('current-user-profile-icon');
     const dropdown = document.getElementById('profile-dropdown');
@@ -217,14 +226,13 @@ function createPostElement(post) {
     li.className = 'post';
     li.dataset.postId = post._id;
     
-    // Проверяем, лайкнул ли текущий пользователь
     const isLiked = post.likes.includes(currentUserId);
     const likeClass = isLiked ? 'liked' : '';
     const likeIcon = isLiked ? 'fa-solid' : 'fa-regular';
 
     li.innerHTML = `
         <div class="post-header">
-            <img src="${post.authorAvatarUrl || 'https://i.ibb.co/L8229Fq/default-avatar.png'}" alt="Аватар" class="post-avatar">
+            <img src="${post.authorAvatarUrl || DEFAULT_AVATAR}" alt="Аватар" class="post-avatar">
             <span class="post-author" onclick="loadProfile('${post.authorUsername}')">${post.authorUsername}</span>
             <span class="post-date">${new Date(post.createdAt).toLocaleDateString()}</span>
         </div>
@@ -263,10 +271,9 @@ function createChatElement(chat) {
     li.className = 'chat-item';
     li.dataset.chatId = chat._id;
 
-    // Определяем собеседника
     const partner = chat.participants.find(p => p._id !== currentUserId);
-    const partnerName = partner ? partner.username : (chat.isGroup ? chat.chatName : 'Неизвестно');
-    const partnerAvatar = partner ? (partner.avatarUrl || 'https://i.ibb.co/L8229Fq/default-avatar.png') : 'https://i.ibb.co/L8229Fq/default-avatar.png';
+    const partnerName = chat.partnerName;
+    const partnerAvatar = chat.partnerAvatarUrl || DEFAULT_AVATAR;
 
     li.innerHTML = `
         <img src="${partnerAvatar}" alt="Аватар" class="chat-avatar">
@@ -276,7 +283,7 @@ function createChatElement(chat) {
         </div>
     `;
 
-    li.addEventListener('click', () => openChat(chat._id, partnerName, partner._id));
+    li.addEventListener('click', () => openChat(chat._id, partnerName, partner ? partner._id : null));
     return li;
 }
 
@@ -315,7 +322,7 @@ async function handleNewPostInline() {
         });
 
         if (response.ok) {
-            postContentInline.value = ''; // Очищаем инлайн-поле
+            postContentInline.value = ''; 
         } else {
             alert('Не удалось опубликовать пост.');
         }
@@ -374,8 +381,9 @@ async function loadProfile(username) {
             
             profileUsername.textContent = `@${user.username}`;
             profileBio.textContent = user.bio || 'Нет информации о себе.';
-            profileAvatar.src = user.avatarUrl || 'https://i.ibb.co/L8229Fq/default-avatar.png';
-            profileBanner.src = user.bannerUrl || 'https://i.ibb.co/2P157M4/default-banner.png';
+            // Используем стандартные заглушки, если URL отсутствует
+            profileAvatar.src = user.avatarUrl || DEFAULT_AVATAR; 
+            profileBanner.src = user.bannerUrl || DEFAULT_BANNER;
             followersCount.textContent = `Подписчики: ${user.followersCount || 0}`;
             followingCount.textContent = `Подписки: ${user.followingCount || 0}`;
 
@@ -383,8 +391,12 @@ async function loadProfile(username) {
             profileActions.innerHTML = '';
             if (user.username !== currentUsername) {
                 const followButton = document.createElement('button');
+                
+                // Устанавливаем начальное состояние кнопки
                 followButton.textContent = data.isFollowing ? 'Отписаться' : 'Подписаться';
                 followButton.className = data.isFollowing ? 'unfollow-button' : 'follow-button';
+                
+                // Устанавливаем обработчик
                 followButton.onclick = () => handleFollow(user._id, data.isFollowing ? 'unfollow' : 'follow');
                 profileActions.appendChild(followButton);
 
@@ -400,14 +412,12 @@ async function loadProfile(username) {
                 editButton.onclick = openEditProfileModal;
                 profileActions.appendChild(editButton);
 
-                // Сохраняем данные текущего пользователя для редактирования
+                // Обновляем локальные данные для модального окна
                 localStorage.setItem('userBio', user.bio);
                 localStorage.setItem('avatarUrl', user.avatarUrl);
                 localStorage.setItem('bannerUrl', user.bannerUrl);
             }
             
-            // Загрузка постов пользователя (здесь можно добавить fetch-запрос к /api/posts/byUser/:userId)
-            // Пока просто очистим
             userPostsList.innerHTML = `<h3>Посты пользователя ${user.username} (В разработке)</h3>`;
 
         } else {
@@ -429,9 +439,11 @@ async function handleFollow(targetUserId, action) {
         });
 
         if (response.ok) {
-            await loadProfile(profileUsername.textContent.substring(1)); // Перезагружаем профиль
+            // Перезагружаем профиль, чтобы обновить счетчики и кнопку
+            await loadProfile(profileUsername.textContent.substring(1)); 
         } else {
-            alert('Ошибка подписки/отписки.');
+            const data = await response.json();
+            alert(data.message || 'Ошибка подписки/отписки.');
         }
     } catch (error) {
         console.error('Ошибка подписки/отписки:', error);
@@ -440,12 +452,12 @@ async function handleFollow(targetUserId, action) {
 
 function openEditProfileModal() {
     const bio = localStorage.getItem('userBio') || '';
-    const avatarUrl = localStorage.getItem('avatarUrl') || '';
-    const bannerUrl = localStorage.getItem('bannerUrl') || '';
+    const avatarUrl = localStorage.getItem('avatarUrl') || DEFAULT_AVATAR;
+    const bannerUrl = localStorage.getItem('bannerUrl') || DEFAULT_BANNER;
     
     document.getElementById('edit-bio').value = bio === 'null' ? '' : bio;
-    document.getElementById('edit-avatar-url').value = avatarUrl === 'null' ? '' : avatarUrl;
-    document.getElementById('edit-banner-url').value = bannerUrl === 'null' ? '' : bannerUrl;
+    document.getElementById('edit-avatar-url').value = avatarUrl === 'null' || avatarUrl === DEFAULT_AVATAR ? '' : avatarUrl;
+    document.getElementById('edit-banner-url').value = bannerUrl === 'null' || bannerUrl === DEFAULT_BANNER ? '' : bannerUrl;
     editProfileModal.style.display = 'block';
 }
 
@@ -453,8 +465,8 @@ async function handleEditProfile(event) {
     event.preventDefault();
     
     const bio = document.getElementById('edit-bio').value;
-    const avatarUrl = document.getElementById('edit-avatar-url').value;
-    const bannerUrl = document.getElementById('edit-banner-url').value;
+    const avatarUrl = document.getElementById('edit-avatar-url').value || DEFAULT_AVATAR;
+    const bannerUrl = document.getElementById('edit-banner-url').value || DEFAULT_BANNER;
     
     try {
         const response = await fetch(`${API_BASE_URL}/api/profile`, {
@@ -475,8 +487,8 @@ async function handleEditProfile(event) {
             localStorage.setItem('avatarUrl', updatedUser.avatarUrl);
             localStorage.setItem('bannerUrl', updatedUser.bannerUrl);
             
-            document.getElementById('top-bar-avatar').src = updatedUser.avatarUrl || 'https://i.ibb.co/L8229Fq/default-avatar.png';
-            document.getElementById('new-post-inline-avatar').src = updatedUser.avatarUrl || 'https://i.ibb.co/L8229Fq/default-avatar.png';
+            document.getElementById('top-bar-avatar').src = updatedUser.avatarUrl;
+            document.getElementById('new-post-inline-avatar').src = updatedUser.avatarUrl;
 
             editProfileModal.style.display = 'none';
             alert('Профиль успешно обновлен!');
@@ -500,6 +512,9 @@ function openCommentsModal(postId) {
     commentsList.innerHTML = '';
     loadComments(postId);
     commentsModal.style.display = 'block';
+    if (socket) {
+        socket.emit('join post', postId);
+    }
 }
 
 async function loadComments(postId) {
@@ -513,7 +528,7 @@ async function loadComments(postId) {
         comments.forEach(comment => {
             commentsList.appendChild(createCommentElement(comment));
         });
-        commentsList.scrollTop = commentsList.scrollHeight; // Прокрутка вниз
+        commentsList.scrollTop = commentsList.scrollHeight; 
 
     } catch (error) {
         console.error('Ошибка загрузки комментариев:', error);
@@ -536,7 +551,6 @@ async function handleSubmitComment() {
 
         if (response.ok) {
             commentContentInput.value = '';
-            // Комментарий будет добавлен через сокет (см. initSocketIO)
         } else {
             alert('Ошибка отправки комментария.');
         }
@@ -553,7 +567,7 @@ async function handleSubmitComment() {
 
 async function loadChats() {
     chatList.innerHTML = '';
-    chatWindow.style.display = 'none'; // Скрываем окно чата при загрузке списка
+    chatWindow.style.display = 'none'; 
 
     try {
         const response = await fetch(`${API_BASE_URL}/api/chats`, {
@@ -582,11 +596,9 @@ async function findOrCreateChat(targetUserId) {
 
         if (response.ok) {
             const data = await response.json();
-            // Получаем имя собеседника
             const partner = data.chat.participants.find(p => p._id !== currentUserId);
             const partnerName = partner ? partner.username : 'Неизвестно';
 
-            // Переходим в чат
             showView('messages');
             openChat(data.chat._id, partnerName, targetUserId);
         } else {
@@ -607,7 +619,6 @@ async function openChat(chatId, partnerName, partnerId) {
     messageContentInput.disabled = false;
     sendMessageButton.disabled = false;
 
-    // Вступаем в комнату сокетов
     if (socket) {
         socket.emit('join chat', chatId);
     }
@@ -619,13 +630,12 @@ async function openChat(chatId, partnerName, partnerId) {
         const messages = await response.json();
 
         messages.forEach(msg => messagesContainer.appendChild(createMessageElement(msg)));
-        messagesContainer.scrollTop = messagesContainer.scrollHeight; // Прокрутка вниз
+        messagesContainer.scrollTop = messagesContainer.scrollHeight; 
         
     } catch (error) {
         console.error('Ошибка загрузки сообщений:', error);
     }
     
-    // Показываем кнопку "Назад" только на мобильных
     if (window.innerWidth < 768) {
         document.getElementById('chat-list-container').style.display = 'none';
         backToChatsButton.style.display = 'inline';
@@ -676,15 +686,13 @@ function initSocketIO() {
         socket.emit('register user', currentUserId);
     });
 
-    // Обновление ленты при новом посте
     socket.on('new post', (post) => {
         if (currentView === 'feed') {
             const element = createPostElement(post);
-            postsList.prepend(element); // Добавляем сверху
+            postsList.prepend(element); 
         }
     });
     
-    // Обновление лайков
     socket.on('post liked', ({ postId, likes }) => {
         const postElement = document.querySelector(`.post[data-post-id="${postId}"]`);
         if (postElement) {
@@ -692,41 +700,36 @@ function initSocketIO() {
             const likeCountSpan = postElement.querySelector('.like-count');
             const heartIcon = postElement.querySelector('.fa-heart');
             
-            likeCountSpan.textContent = likes;
-            
-            // Переключаем классы
-            const isLiked = likeButton.classList.contains('liked');
-            if (isLiked && likes < likeCountSpan.textContent) { // Если был лайк, а стало меньше
+            // Если лайк был, а стало меньше -> дизлайк
+            if (likeButton.classList.contains('liked') && likes < parseInt(likeCountSpan.textContent)) {
                 likeButton.classList.remove('liked');
                 heartIcon.classList.remove('fa-solid');
                 heartIcon.classList.add('fa-regular');
-            } else if (!isLiked && likes > likeCountSpan.textContent) { // Если не было лайка, а стало больше
+            // Если лайка не было, а стало больше -> лайк
+            } else if (!likeButton.classList.contains('liked') && likes > parseInt(likeCountSpan.textContent)) {
                  likeButton.classList.add('liked');
                 heartIcon.classList.remove('fa-regular');
                 heartIcon.classList.add('fa-solid');
             }
+            likeCountSpan.textContent = likes;
         }
     });
 
-    // Получение нового комментария
     socket.on('new comment', (comment) => {
         if (currentPostIdForComments === comment.postId) {
             commentsList.appendChild(createCommentElement(comment));
-            commentsList.scrollTop = commentsList.scrollHeight; // Прокрутка вниз
+            commentsList.scrollTop = commentsList.scrollHeight; 
         }
     });
 
-    // Получение нового сообщения
     socket.on('receive message', (message) => {
         if (currentChatId === message.chatId) {
             messagesContainer.appendChild(createMessageElement(message));
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
-        // Также обновляем список чатов
-        loadChats();
+        loadChats(); // Обновляем список чатов
     });
     
-    // Принудительное обновление списка чатов (когда пришло сообщение, а чат был закрыт)
     socket.on('update chat list', ({ chatId }) => {
          if (currentView === 'messages' && currentChatId !== chatId) {
              loadChats();
@@ -768,11 +771,11 @@ document.addEventListener('DOMContentLoaded', () => {
     registerForm.addEventListener('submit', (e) => handleAuth(e, 'register', registerError));
     
     // Обработчики выхода
-    document.getElementById('logout-button').addEventListener('click', handleLogout); // Сайдбар
-    document.getElementById('dropdown-logout-button').addEventListener('click', handleLogout); // Дропдаун
+    document.getElementById('logout-button').addEventListener('click', handleLogout); 
+    document.getElementById('dropdown-logout-button').addEventListener('click', handleLogout); 
 
     // Обработчики постов
-    submitPostInline.addEventListener('click', handleNewPostInline); // Инлайн-пост
+    submitPostInline.addEventListener('click', handleNewPostInline); 
 
     // Обработчики профиля
     editProfileForm.addEventListener('submit', handleEditProfile);

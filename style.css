@@ -886,15 +886,15 @@ body {
         top: 0;
         z-index: 500; /* Под sidebar */
         width: 100%;
-        padding-top: 0; /* Компенсация, чтобы не было двойного отступа */
+        padding-top: 0; 
         padding-bottom: 0;
         height: 60px;
     }
     
     #main-content {
-        padding: 0; /* Убираем лишний паддинг, он будет внутри feed/profile */
+        padding: 0; 
         align-items: flex-start; 
-        flex-wrap: wrap; /* Нужно для sticky top-bar */
+        flex-wrap: wrap; 
         padding-bottom: 20px;
     }
 
@@ -911,7 +911,6 @@ body {
     }
     
     .new-post-inline-vk {
-        /* Делаем инлайн-пост статичным относительно ленты */
         position: static;
         transform: none;
         margin-top: 0;
